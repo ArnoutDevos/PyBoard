@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	
+	<title>Papo Reto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="C. Magno Nascimento">
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='./images/icon.png') }}">
+
+    <title>PyBoard</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/sticky-footer.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <!-- Begin page content -->
+    <main role="main" class="container">
+      <h1 class="mt-5">PyBoard</h1>
+	  <p class="lead">Track your python experiments and data.</p>
+	  <kbd>import PyBoard</kbd><br>
+	  <kbd>board = PyBoard()</kbd><br>
+	  <kbd>board.start()</kbd><br>
+	  <kbd>board.log({'y':loss, 'x':epoch}</kbd>
+	</main>
+	<div class="chart-container" style="position: relative; height:90vh; width:95vw">
+			<canvas id="myChart"></canvas>	
+	</div>
+	
+	<script type="text/javascript" charset="utf-8">
+		const socket = io();
+		
+		socket.on('connect', () => {
+			socket.emit('connected', {'nickname':'Nickname'}, (data) => {
+			});
+		});
+		
+		socket.on('server_message', (data) => {
+			myChart.data.datasets[0].data = data.message['values'];
+			myChart.data.labels = data.message['labels'];
+			myChart.update();
+		});
+		
+		</script>
+			
+		<script>	
+				var ctx = document.getElementById('myChart').getContext('2d');
+				var content = {{ newest_content|tojson }};
+				var fontsize = 20;
+				var myChart = new Chart(ctx, { 
+					type: 'line',
+					data: {
+						labels: content['labels'],
+						datasets: [{
+							label: 'Measurement',
+							data: content['values'],
+							backgroundColor: [
+								'rgba(255, 99, 132, 0.2)'
+							],
+							borderColor: [
+								'rgba(255, 99, 132, 1)'
+							],
+							borderWidth: 4
+						}]
+					},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: true,
+									fontSize: fontsize
+								},
+								scaleLabel: {
+									display: true,
+									labelString: 'Loss',
+									fontSize: fontsize
+								}
+							}],
+							xAxes: [{
+								ticks: {
+									fontSize: fontsize
+								},
+								scaleLabel: {
+									display: true,
+									labelString: 'Epoch',
+									fontSize: fontsize
+								}
+							}]
+						}
+					}
+				});
+			</script>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Made by <a href="http://www.arnoutdevos.net/">Arnout Devos</a></span>
+      </div>
+    </footer>
+  </body>
+</html>
